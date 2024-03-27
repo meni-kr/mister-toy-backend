@@ -11,6 +11,8 @@ export const toyService = {
 }
 
 function query(filterBy, sortBy) {
+    // console.log('filterBy:', filterBy)
+    // console.log('sortBy:', sortBy)
 
     let filteredToys = toys
     if (!filterBy.name) filterBy.name = ''
@@ -34,16 +36,18 @@ function query(filterBy, sortBy) {
         var num
         if (sortBy.desc) num = 1
         if (!sortBy.desc) num = -1
+        // console.log('filteredToys:',filteredToys )
         filteredToys.sort((t1, t2) => (num) * (t2.name.localeCompare(t1.name)))
+        // console.log('filteredToys:',filteredToys )
     }
     const regExp = new RegExp(filterBy.name, 'i')
-    filteredToys.filter(toy => regExp.test(toy.name) &&
+    return Promise.resolve(filteredToys.filter(toy => regExp.test(toy.name) &&
         toy.price <= filterBy.maxPrice &&
         toy.inStock !== filterBy.inStock
 
-    )
+    ))
 
-    return Promise.resolve(filteredToys);
+    
 }
 
 function getById(_id) {

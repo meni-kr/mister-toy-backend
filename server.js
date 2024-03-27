@@ -35,7 +35,6 @@ app.get('/api/toy', (req, res) => {
 
     toyService.query(filterBy, sort)
         .then(toys => {
-            console.log(toys);
             res.send(toys)
         })
         .catch(err => {
