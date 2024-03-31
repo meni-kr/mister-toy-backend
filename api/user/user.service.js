@@ -36,7 +36,7 @@ async function query(filterBy = {}) {
 async function getById(userId) {
     try {
         const collection = await dbService.getCollection('user')
-        const user = await collection.findOne({ _id: ObjectId(userId) })
+        const user = await collection.findOne({ _id: new ObjectId(userId) })
         delete user.password
         return user
     } catch (err) {
@@ -58,7 +58,7 @@ async function getByUsername(username) {
 async function remove(userId) {
     try {
         const collection = await dbService.getCollection('user')
-        await collection.deleteOne({ _id: ObjectId(userId) })
+        await collection.deleteOne({ _id: new ObjectId(userId) })
     } catch (err) {
         logger.error(`cannot remove user ${userId}`, err)
         throw err
@@ -69,7 +69,7 @@ async function update(user) {
     try {
         // peek only updatable fields!
         const userToSave = {
-            _id: ObjectId(user._id),
+            _id: new ObjectId(user._id),
             username: user.username,
             fullname: user.fullname,
             score: user.score
@@ -94,6 +94,7 @@ async function add(user) {
             username: user.username,
             password: user.password,
             fullname: user.fullname,
+            imgUrl: user.imgUrl || null,
             isAdmin:false
         }
         const collection = await dbService.getCollection('user')
