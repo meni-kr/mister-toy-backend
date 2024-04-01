@@ -1,8 +1,8 @@
 import Cryptr from 'cryptr'
 import bcrypt from 'bcrypt'
 
-import {userService} from '../user/user.service.js'
-import {logger} from '../../services/logger.service.js'
+import { userService } from '../user/user.service.js'
+import { logger } from '../../services/logger.service.js'
 
 const cryptr = new Cryptr(process.env.SECRET || 'Secret-Puk-1234')
 
@@ -27,7 +27,30 @@ async function login(username, password) {
     return user
 }
 
-async function signup({username, password, fullname, imgUrl}) {
+// async function signup({ newUser }) {
+//     const saltRounds = 10
+//     let username = newUser.username
+//     let password = newUser.password
+//     let fullname = newUser.fullname
+//     console.log('username:', username)
+//     console.log('password:', password)
+//     console.log('fullname:', fullname)
+//     logger.debug(`auth.service - signup with username: ${username}, fullname: ${fullname}`)
+//     if (!username || !password || !fullname) return Promise.reject('Missing required signup information')
+//     const userExist = await userService.getByUsername(username)
+//     if (userExist) return Promise.reject('Username already taken')
+//     const hash = await bcrypt.hash(password, saltRounds)
+//     return userService.add({ username, password: hash, fullname })
+// }
+
+
+async function signup({ newUser }) {
+    console.log(newUser);
+    const {username, password, fullname, imgUrl} =newUser
+    console.log('username:', username)
+    // let username = newUser.username
+    // let password = newUser.password
+    // let fullname = newUser.fullname
     const saltRounds = 10
 
     logger.debug(`auth.service - signup with username: ${username}, fullname: ${fullname}`)
@@ -37,12 +60,13 @@ async function signup({username, password, fullname, imgUrl}) {
     if (userExist) return Promise.reject('Username already taken')
 
     const hash = await bcrypt.hash(password, saltRounds)
+    
     return userService.add({ username, password: hash, fullname, imgUrl })
 }
 
 function getLoginToken(user) {
-    const userInfo = {_id : user._id, fullname: user.fullname, isAdmin: user.isAdmin}
-    return cryptr.encrypt(JSON.stringify(userInfo))    
+    const userInfo = { _id: user._id, fullname: user.fullname, isAdmin: user.isAdmin }
+    return cryptr.encrypt(JSON.stringify(userInfo))
 }
 
 function validateToken(loginToken) {
@@ -51,7 +75,7 @@ function validateToken(loginToken) {
         const loggedinUser = JSON.parse(json)
         return loggedinUser
 
-    } catch(err) {
+    } catch (err) {
         console.log('Invalid login token')
     }
     return null
